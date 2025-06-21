@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MusicZone - Songs</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+  .card-img-top {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+    .card:hover .card-img-top {
+      transform: scale(1.02);
+      transition: transform 0.3s ease-in-out;
+    }
+
+    body {
+      background-color: black;
+      color: white;
+      font-family: Arial, sans-serif;
+      padding-top: 70px;
+      padding-bottom: 120px;
+    }
+
+    .navbar {
+      background-color: black;
+    }
+
+    .navbar-brand, .nav-link {
+      color: #1DB954 !important;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .section {
+      display: none;
+      animation: fadeIn 0.4s ease-in;
+    }
+
+    .active-section {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .hero {
+      background: linear-gradient(to right, #1DB954, #191414);
+      color: white;
+      padding: 60px 20px;
+      text-align: center;
+    }
+
+    .section-title {
+      margin: 30px 0 20px;
+      color: #1DB954;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .card {
+      background-color: #1e1e1e;
+      color: white;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .card:hover {
+      transform: scale(1.03);
+    }
+
+    .player-bar {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background: linear-gradient(135deg, #1e1e1e, #333);
+      padding: 15px;
+      border-top: 2px solid #1DB954;
+      z-index: 999;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.5);
+    }
+
+    .player-info {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .song-title {
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #1DB954;
+    }
+
+    .progress-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .progress-bar {
+      flex: 1;
+      height: 6px;
+      background: #444;
+      border-radius: 3px;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: #1DB954;
+      width: 0%;
+      transition: width 0.1s;
+    }
+
+    .time-display {
+      font-size: 12px;
+      color: #ccc;
+      min-width: 40px;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .control-btn {
+      background: none;
+      border: none;
+      color: #1DB954;
+      font-size: 20px;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 50%;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+    }
+
+    .control-btn:hover {
+      background: rgba(29, 185, 84, 0.2);
+      transform: scale(1.1);
+    }
+
+    .play-pause-btn {
+      font-size: 24px;
+      width: 50px;
+      height: 50px;
+    }
+
+    .volume-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .volume-slider {
+      width: 80px;
+      height: 4px;
+      background: #444;
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .volume-slider::-webkit-slider-thumb {
+      appearance: none;
+      width: 12px;
+      height: 12px;
+      background: #1DB954;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    .volume-slider::-moz-range-thumb {
+      width: 12px;
+      height: 12px;
+      background: #1DB954;
+      border-radius: 50%;
+      cursor: pointer;
+      border: none;
+    }
+
+    audio {
+      display: none;
+    }
+
+    footer {
+      background-color: black;
+      color: gray;
+      text-align: center;
+      padding: 15px;
+      margin-top: 40px;
+    }
+</style>
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-lg fixed-top">
+  <div class="container-fluid">
+    <a class="navbar-brand" onclick="navigateTo('home')"> MusicZone🎧</a>
+    <button class="navbar-toggler bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon text-light"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" onclick="navigateTo('home')">Home</a></li>
+        <li class="nav-item"><a class="nav-link" onclick="navigateTo('browse')">Browse</a></li>
+        <li class="nav-item"><a class="nav-link" onclick="navigateTo('playlists')">Playlists</a></li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Login</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div id="home" class="section active-section">
+  <div class="hero">
+    <h1>Movie Songs</h1>
+    <p>Enjoy the soulful tracks from the Hi Nanna album.</p>
+    <button class="btn btn-success btn-lg" onclick="goToBrowseAndPlay()">Start Listening</button>
+  </div>
+</div>
+
+<div id="browse" class="section container">
+  <h2 class="section-title">My Favourite Songs❤️</h2>
+  <div class="row g-4">
+
+    <div class="col-md-3">
+      <div class="card p-2" onclick="playSong('vena.mp3', 'Vennante', 'Hesham Abdul Wahab')">
+        <img src="https://i.pinimg.com/736x/64/3c/9b/643c9b576427964bfc454da410ac95d1.jpg" class="card-img-top" alt="Vennante">
+        <div class="card-body">
+          <h5 class="card-title">Vennante</h5>
+          <p class="card-text">Hesham Abdul Wahab</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card p-2" onclick="playSong('buta.mp3', 'Buttabomma', 'Armaan Malik')">
+        <img src="https://i.pinimg.com/736x/d1/9c/22/d19c22efc18ac1480688e190367837f1.jpg" class="card-img-top">
+        <div class="card-body">
+          <h5 class="card-title">Buttabomma</h5>
+          <p class="card-text">Armaan Malik</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card p-2" onclick="playSong('og.mp3', 'Hungry Cheetah', 'Thaman S')">
+        <img src="https://i.pinimg.com/736x/a0/e2/a9/a0e2a99b920e431e4d56777ad607620d.jpg" class="card-img-top" >
+        <div class="card-body">
+          <h5 class="card-title">Hungry Cheetah</h5>
+          <p class="card-text">Thaman S</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card p-2" onclick="playSong('rak.mp3', 'Rakshasi Rakshasi', 'Achu Rajamani')">
+        <img src="https://i.pinimg.com/736x/2c/ab/a8/2caba8305ae587f19b15e83476be70c6.jpg" class="card-img-top">
+        <div class="card-body">
+          <h5 class="card-title">Rakshasi Rakshasi</h5>
+          <p class="card-text">Achu Rajamani</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="playlists" class="section container my-5">
+  <h2 class="section-title">Your Playlists</h2>
+  <div class="row g-4">
+
+    <div class="col-md-4">
+      <div class="card p-2" onclick="toggleSongs('chillSongs')">
+        <img src="https://i.pinimg.com/736x/eb/1c/32/eb1c32836c8e52262f755e57f4d6616e.jpg" class="card-img-top" alt="Chill Vibes">
+        <div class="card-body">
+          <h5 class="card-title">Chill Vibes</h5>
+          <p class="card-text">Relax and unwind with smooth acoustic and lo-fi tracks.</p>
+        </div>
+      </div>
+      <ul class="list-group mt-2 d-none" id="chillSongs">
+        <li class="list-group-item list-group-item-dark" onclick="playSong('yeman.mp3', 'Yemantramo', 'Various Artists')">Yemantramo</li>
+        <li class="list-group-item list-group-item-dark" onclick="playSong('ramulo.mp3', 'Ramulo', 'Various Artists')">Ramulo Ramula</li>
+      </ul>
+    </div>
+    <div class="col-md-4">
+      <div class="card p-2" onclick="toggleSongs('workoutSongs')">
+        <img src="https://i.pinimg.com/736x/a6/70/20/a67020ec3d6b7ed6e4d74dc643561e9f.jpg" class="card-img-top" alt="Workout Beats">
+        <div class="card-body">
+          <h5 class="card-title">Workout Beats</h5>
+          <p class="card-text">High-energy music to keep you pumped through your session.</p>
+        </div>
+      </div>
+      <ul class="list-group mt-2 d-none" id="workoutSongs">
+        <li class="list-group-item list-group-item-dark" onclick="playSong('w2.mp3', 'Animal', 'Various Artists')">Animal</li>
+        <li class="list-group-item list-group-item-dark" onclick="playSong('w1.mp3', 'Dhruva', 'Various Artists')">Dhruva</li>
+      </ul>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card p-2" onclick="toggleSongs('retroSongs')">
+        <img src="https://i.pinimg.com/736x/73/76/33/737633f8943ee63af9afcf607e34f207.jpg" class="card-img-top" alt="Retro Rewind">
+        <div class="card-body">
+          <h5 class="card-title">Retro Rewind</h5>
+          <p class="card-text">Classic hits from the 80s and 90s to bring back the nostalgia.</p>
+        </div>
+      </div>
+      <ul class="list-group mt-2 d-none" id="retroSongs">
+        <li class="list-group-item list-group-item-dark" onclick="playSong('re1.mp3', 'Mattey Raani', 'Various Artists')">Mattey Raani</li>
+        <li class="list-group-item list-group-item-dark" onclick="playSong('re2.mp3', 'Roja', 'Various Artists')">Roja</li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+<div class="player-bar">
+  <div class="player-info">
+    <div class="song-title" id="nowPlaying">Select a song to play</div>
+    <div id="artistName" style="font-size: 14px; color: #ccc;"></div>
+  </div>
+  
+  <div class="progress-container">
+    <span class="time-display" id="currentTime">0:00</span>
+    <div class="progress-bar" onclick="seekTo(event)">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <span class="time-display" id="totalTime">0:00</span>
+  </div>
+  
+  <div class="controls">
+    <button class="control-btn" onclick="previousSong()" title="Previous">
+      ⏮️
+    </button>
+    
+    <button class="control-btn play-pause-btn" id="playPauseBtn" onclick="togglePlayPause()" title="Play/Pause">
+      ▶️
+    </button>
+    
+    <button class="control-btn" onclick="nextSong()" title="Next">
+      ⏭️
+    </button>
+    
+    <div class="volume-container">
+      <button class="control-btn" onclick="toggleMute()" id="volumeBtn" title="Volume">
+        🔊
+      </button>
+      <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="50" oninput="changeVolume(this.value)">
+    </div>
+  </div>
+  
+  <audio id="audioPlayer">
+    <source src="" type="audio/mp3" />
+    Your browser does not support the audio tag.
+  </audio>
+</div>
+
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header border-0">
+        <h5 class="modal-title" id="loginModalLabel">Login to MusicZone</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="loginForm" onsubmit="handleLogin(event)">
+          <div class="mb-3">
+            <label for="email" class="form-label">Email address</label>
+            <input type="email" class="form-control bg-dark text-white" id="email" required />
+          </div>
+          <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control bg-dark text-white" id="password" required />
+          </div>
+          <button type="submit" class="btn btn-success w-100">Login</button>
+        </form>
+        <div id="loginMessage" class="mt-3 text-center text-success d-none">Login successful!</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  &copy; 2025 MusicZone. Built by Syamanth Uma Sai Kiran Singamsetti.
+</footer>
+<script>
+  
+  let currentSongIndex = 0;
+  let isPlaying = false;
+  let isMuted = false;
+  let currentVolume = 0.5;
+  
+  const playlist = [
+    { file: 'vena.mp3', title: 'Vennante', artist: 'Hesham Abdul Wahab' },
+    { file: 'buta.mp3', title: 'Buttabomma', artist: 'Armaan Malik' },
+    { file: 'og.mp3', title: 'Hungry Cheetah', artist: 'Thaman S' },
+    { file: 'rak.mp3', title: 'Rakshasi Rakshasi', artist: 'Achu Rajamani' },
+    { file: 'yeman.mp3', title: 'Yemantramo', artist: 'Various Artists' },
+    { file: 'ramulo.mp3', title: 'Ramulo', artist: 'Various Artists' },
+    { file: 'w2.mp3', title: 'Animal', artist: 'Various Artists' },
+    { file: 'w1.mp3', title: 'Dhruva', artist: 'Various Artists' },
+    { file: 're1.mp3', title: 'Mattey Raani', artist: 'Various Artists' },
+    { file: 're2.mp3', title: 'Roja', artist: 'Various Artists' }
+  ];
+
+  const audioPlayer = document.getElementById('audioPlayer');
+  const playPauseBtn = document.getElementById('playPauseBtn');
+  const nowPlaying = document.getElementById('nowPlaying');
+  const artistName = document.getElementById('artistName');
+  const progressFill = document.getElementById('progressFill');
+  const currentTimeEl = document.getElementById('currentTime');
+  const totalTimeEl = document.getElementById('totalTime');
+  const volumeSlider = document.getElementById('volumeSlider');
+  const volumeBtn = document.getElementById('volumeBtn');
+
+  audioPlayer.volume = currentVolume;
+  
+
+  audioPlayer.addEventListener('timeupdate', updateProgress);
+  audioPlayer.addEventListener('loadedmetadata', updateDuration);
+  audioPlayer.addEventListener('ended', nextSong);
+
+  function navigateTo(sectionId) {
+    const sections = document.querySelectorAll('.section');
+    sections.forEach(section => section.classList.remove('active-section'));
+    const active = document.getElementById(sectionId);
+    if (active) active.classList.add('active-section');
+  }
+
+  function playSong(file, title, artist) {
+
+    const songIndex = playlist.findIndex(song => song.file === file);
+    if (songIndex !== -1) {
+      currentSongIndex = songIndex;
+    }
+    
+    audioPlayer.src = file;
+    nowPlaying.textContent = title;
+    artistName.textContent = artist;
+    
+    audioPlayer.play().then(() => {
+      isPlaying = true;
+      playPauseBtn.textContent = '⏸️';
+    }).catch(e => {
+      console.log('Playback failed:', e);
+    });
+  }
+
+  function togglePlayPause() {
+    if (audioPlayer.src === '') {
+      const firstSong = playlist[0];
+      playSong(firstSong.file, firstSong.title, firstSong.artist);
+      return;
+    }
+    
+    if (isPlaying) {
+      audioPlayer.pause();
+      isPlaying = false;
+      playPauseBtn.textContent = '▶️';
+    } else {
+      audioPlayer.play().then(() => {
+        isPlaying = true;
+        playPauseBtn.textContent = '⏸️';
+      }).catch(e => {
+        console.log('Playback failed:', e);
+      });
+    }
+  }
+
+  function nextSong() {
+    currentSongIndex = (currentSongIndex + 1) % playlist.length;
+    const nextSong = playlist[currentSongIndex];
+    playSong(nextSong.file, nextSong.title, nextSong.artist);
+  }
+
+  function previousSong() {
+    currentSongIndex = currentSongIndex === 0 ? playlist.length - 1 : currentSongIndex - 1;
+    const prevSong = playlist[currentSongIndex];
+    playSong(prevSong.file, prevSong.title, prevSong.artist);
+  }
+
+  function changeVolume(value) {
+    currentVolume = value / 100;
+    audioPlayer.volume = currentVolume;
+    if (currentVolume === 0) {
+      volumeBtn.textContent = '🔇';
+    } else if (currentVolume < 0.5) {
+      volumeBtn.textContent = '🔉';
+    } else {
+      volumeBtn.textContent = '🔊';
+    }
+  }
+
+  function toggleMute() {
+    if (isMuted) {
+      audioPlayer.volume = currentVolume;
+      volumeSlider.value = currentVolume * 100;
+      volumeBtn.textContent = currentVolume < 0.5 ? '🔉' : '🔊';
+      isMuted = false;
+    } else {
+      audioPlayer.volume = 0;
+      volumeBtn.textContent = '🔇';
+      isMuted = true;
+    }
+  }
+
+  function updateProgress() {
+    if (audioPlayer.duration) {
+      const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+      progressFill.style.width = progress + '%';
+      
+      currentTimeEl.textContent = formatTime(audioPlayer.currentTime);
+    }
+  }
+
+  function updateDuration() {
+    totalTimeEl.textContent = formatTime(audioPlayer.duration);
+  }
+
+  function seekTo(event) {
+    const progressBar = event.currentTarget;
+    const rect = progressBar.getBoundingClientRect();
+    const percentage = (event.clientX - rect.left) / rect.width;
+    audioPlayer.currentTime = percentage * audioPlayer.duration;
+  }
+
+  function formatTime(seconds) {
+    if (isNaN(seconds)) return '0:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  }
+
+  function toggleSongs(id) {
+    const list = document.getElementById(id);
+    list.classList.toggle('d-none');
+  }
+
+  function handleLogin(event) {
+    event.preventDefault();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const message = document.getElementById('loginMessage');
+
+    if (email && password) {
+      message.classList.remove('d-none');
+      setTimeout(() => {
+        const modal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
+        modal.hide();
+        message.classList.add('d-none');
+        document.getElementById('loginForm').reset();
+      }, 1500);
+    }
+  }
+
+  function goToBrowseAndPlay() {
+    navigateTo('browse'); 
+    playSong('vena.mp3', 'Vennante', 'Hesham Abdul Wahab'); 
+  }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
