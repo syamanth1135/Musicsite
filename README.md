@@ -17,7 +17,7 @@ Welcome to **MusicSite**, a modern music streaming web application that offers a
 
 - **Frontend**: HTML, CSS, JavaScript
   
-- **Media**: Audio streaming using `<audio>` tag or libraries like Howler.js
+- **Media**: Audio streaming using `<audio>` tag 
 
 
 ## 🚀 Features
@@ -26,6 +26,5 @@ Welcome to **MusicSite**, a modern music streaming web application that offers a
 - 🧠 Smart search feature
 - 💡 Playlist creation and management
 - 📱 Fully responsive for mobile, tablet, and desktop
-- 🌙 Dark/light theme toggle *(if applicable)*
 
 
